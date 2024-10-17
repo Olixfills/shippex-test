@@ -12,8 +12,8 @@ const WithAauthenticatedWrapper = (Component: any, noSafeArea?: boolean) => {
     container: {
       backgroundColor: colors.white,
       flex: 1,
-      paddingHorizontal: pixelSizeHorizontal(noSafeArea ? 0 : 20),
-      paddingVertical: pixelSizeVertical(noSafeArea ? 0 : 20),
+      paddingHorizontal: pixelSizeHorizontal(noSafeArea ? 0 : 16),
+      paddingVertical: pixelSizeVertical(noSafeArea ? 0 : 10),
     },
   });
   return (props: any) => {

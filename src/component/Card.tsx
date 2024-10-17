@@ -1,7 +1,9 @@
-import React, {ReactNode, useState} from 'react';
+import React, {ReactNode, SetStateAction, useState} from 'react';
 import {
+  Alert,
   Animated,
   Image,
+  Linking,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -18,17 +20,62 @@ import {getLighterColor} from './GetLighterColor';
 import CustomButton from './CustomButton';
 import CloseIcon from '../../assets/images/CollapseClose.png';
 import OpenIcon from '../../assets/images/CollaspseOpen.png';
+import {BoxIcon} from '../../assets/icons';
 
 type CardProps = {
-  children: ReactNode;
-  statusColor: string; // Status color prop
+  data: {
+    _assign: any;
+    _comments: any;
+    _liked_by: any;
+    _user_tags: any;
+    color: string;
+    creation: string;
+    docstatus: number;
+    idx: number;
+    modified: string;
+    modified_by: string;
+    name: string;
+    owner: string;
+    status: string;
+  };
+  isChecked: boolean;
+  setIsChecked: SetStateAction<any>;
 };
 
-const Card = ({statusColor}: CardProps) => {
-  const [collapsed, setCollapsed] = useState(false);
-  const [animation] = useState(new Animated.Value(0));
-  const [isChecked, setIsChecked] = useState(false);
+const makePhoneCall = (phoneNumber: string) => {
+  const phoneUrl = `tel:${phoneNumber}`;
+  Linking.canOpenURL(phoneUrl)
+    .then(supported => {
+      if (supported) {
+        Linking.openURL(phoneUrl);
+      } else {
+        Alert.alert('Error', 'Your device does not support making calls.');
+      }
+    })
+    .catch(err => console.error('An error occurred', err));
+};
 
+// Function to handle WhatsApp message
+const openWhatsApp = (phoneNumber: string) => {
+  const whatsappUrl = `https://wa.me/${phoneNumber}`;
+  Linking.canOpenURL(whatsappUrl)
+    .then(supported => {
+      if (supported) {
+        Linking.openURL(whatsappUrl);
+      } else {
+        Alert.alert(
+          'Error',
+          'WhatsApp is not installed on your device, or the link is not supported.',
+        );
+      }
+    })
+    .catch(err => console.error('An error occurred', err));
+};
+
+const Card = ({data, isChecked, setIsChecked}: CardProps) => {
+  const [collapsed, setCollapsed] = useState(true);
+  const [animation] = useState(new Animated.Value(0));
+  const phoneNumber = '+2347089244479';
   const toggleCollapse = () => {
     Animated.timing(animation, {
       toValue: collapsed ? 1 : 0,
@@ -58,8 +105,9 @@ const Card = ({statusColor}: CardProps) => {
           size={20}
           color={colors.dark_blue}
         />
+        <BoxIcon />
         <View style={styles.cardInfo}>
-          <CustomText size={16} weight={400} text="AWS" />
+          <CustomText size={16} weight={400} text={data.name} />
           <CustomText
             size={18}
             color={colors.dark_grey}
@@ -72,14 +120,19 @@ const Card = ({statusColor}: CardProps) => {
           style={[
             styles.statusContainer,
             {
-              backgroundColor: getLighterColor(statusColor, 0.5),
+              backgroundColor: getLighterColor(data?.color || '', 0.5),
             },
           ]}>
           <CustomText
-            size={15}
+            size={11}
             weight={400}
-            text="Received"
-            style={{color: statusColor}}
+            text={data.status}
+            style={{
+              color: data.color,
+              textTransform: 'uppercase',
+              minWidth: pixelSizeHorizontal(66),
+              textAlign: 'center',
+            }}
           />
         </View>
         <TouchableWithoutFeedback onPress={toggleCollapse}>
@@ -98,35 +151,50 @@ const Card = ({statusColor}: CardProps) => {
         <View>
           <View style={styles.cardHeader}>
             <View style={styles.cardInfo}>
-              <CustomText size={16} weight={400} text="AWS" />
               <CustomText
-                size={18}
+                size={16}
+                weight={400}
+                text="Origin"
+                color={colors.dark_blue}
+              />
+              <CustomText
+                size={16}
                 color={colors.dark_grey}
                 weight={700}
-                text="45566768"
+                text={data.name}
               />
               <CustomText size={16} weight={400} text="cairo - alexandra" />
             </View>
             <CustomText text=">" />
             <View style={styles.cardInfo}>
-              <CustomText size={16} weight={400} text="AWS" />
               <CustomText
-                size={18}
+                size={16}
+                weight={400}
+                text="Destination"
+                color={colors.dark_blue}
+              />
+              <CustomText
+                size={16}
                 color={colors.dark_grey}
                 weight={700}
-                text="45566768"
+                text={data.owner}
               />
-              <CustomText size={16} weight={400} text="cairo - alexandra" />
+              <CustomText size={14} weight={400} text="cairo - alexandra" />
             </View>
           </View>
           <View style={styles.buttonContainer}>
             <View style={styles.button}>
-              <CustomButton bgColor={colors.semi_very_light_blue} text="Call" />
+              <CustomButton
+                bgColor={colors.semi_very_light_blue}
+                text="Call"
+                onPress={() => makePhoneCall(phoneNumber)}
+              />
             </View>
             <View style={styles.button}>
               <CustomButton
                 bgColor={colors.semi_very_light_green}
                 text="WhatsApp"
+                onPress={() => openWhatsApp(phoneNumber)}
               />
             </View>
           </View>
@@ -142,7 +210,7 @@ const styles = StyleSheet.create({
     marginVertical: pixelSizeVertical(10),
     padding: pixelSizeHorizontal(10),
     borderRadius: 12,
-    backgroundColor: colors.very_light_grey,
+    backgroundColor: colors.light_grey,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -159,6 +227,7 @@ const styles = StyleSheet.create({
   },
   cardInfo: {
     flexDirection: 'column',
+    // width: '50%',
   },
   statusContainer: {
     paddingHorizontal: pixelSizeHorizontal(10),

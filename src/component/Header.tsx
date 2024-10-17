@@ -24,7 +24,7 @@ export default function Header({
         size={18}
         weight={400}
         width={300}
-        color={colors.light_grey}
+        color={colors.text_grey}
         style={styles.space}
       />
     </View>

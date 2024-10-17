@@ -11,6 +11,7 @@ import CustomButton from '../../component/CustomButton';
 import Header from '../../component/Header';
 import CustomTextInput from '../../component/Input/CustomTextInput';
 import {loginUser} from '../../../services/Auth.Service';
+import {useUser} from '../../context/UserContext';
 
 type Props = {
   navigation: any;
@@ -21,6 +22,7 @@ const Login = ({navigation}: Props) => {
   const [password, setPassword] = useState('');
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const {setUserData} = useUser();
 
   const handleLoginUser = async () => {
     if (!email || !password) {
@@ -41,6 +43,7 @@ const Login = ({navigation}: Props) => {
       setLoading(false);
 
       if (apiResponse?.message === 'Logged In') {
+        setUserData(apiResponse);
         navigation.navigate('AuthenticatedStack');
       } else {
         Alert.alert('Login Failed', 'Invalid credentials or server issue.');
@@ -100,7 +103,7 @@ export default Login;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.lumii_off_white,
+    backgroundColor: colors.white,
   },
   container1: {
     flex: 1,

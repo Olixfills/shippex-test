@@ -46,7 +46,7 @@ const CustomButton = ({
 }: Props) => {
   const styles = StyleSheet.create({
     container: {
-      height: height || 50,
+      height: height || 44,
       backgroundColor: bgColor,
       borderRadius: 12,
       width: width || '100%',

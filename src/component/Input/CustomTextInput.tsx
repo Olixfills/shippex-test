@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, TextInput, View} from 'react-native';
+import {StyleSheet, Text, TextInput, View, TextInputProps} from 'react-native';
 import {ErrorIcon} from '../../../assets/icons/index';
 import {
   colors,
@@ -9,17 +9,17 @@ import {
   pixelSizeVertical,
 } from '../../common/GlobalStyles';
 
-type Props = {
+type Props = TextInputProps & {
   value: string;
   setValue: (value: string) => void;
   placeholder?: string;
   height?: number;
-  keyboardType?: any;
   error?: boolean;
   errormsg?: string;
   label?: string;
-  editable?: any;
+  editable?: boolean;
   isPassword?: boolean;
+  icon?: React.ReactNode;
 };
 
 const CustomTextInput = ({
@@ -30,38 +30,42 @@ const CustomTextInput = ({
   keyboardType,
   error,
   errormsg,
-  label,
-  editable,
-  isPassword,
+  editable = true,
+  isPassword = false,
+  icon,
+  ...rest
 }: Props) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const styles = StyleSheet.create({
-    input: {
-      width: '100%',
+    inputContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.light_grey,
+      borderRadius: 12,
       borderColor: isFocused
         ? colors.dark_blue
         : error
-        ? colors.error_red // Border color when there's an error
-        : 'transparent', // No border when not focused and no error
-      borderWidth: isFocused || error ? 1 : 0, // Show border only when focused or error
+        ? colors.error_red
+        : 'transparent',
+      borderWidth: isFocused || error ? 1 : 0,
       height: heightPixel(height || 77),
       paddingHorizontal: pixelSizeHorizontal(10),
+    },
+    input: {
+      flex: 1,
       color: colors.dark_grey,
       fontFamily: 'Jost',
       fontSize: fontPixel(16),
-      borderRadius: 12,
-      backgroundColor: colors.very_light_grey,
     },
     label: {
       position: 'absolute',
       left: pixelSizeHorizontal(10),
-      top: isFocused || value ? pixelSizeVertical(-10) : pixelSizeVertical(10), // Move label up when focused or when there's value
-      backgroundColor: colors.very_light_grey, // Match with input background
-      paddingHorizontal: pixelSizeHorizontal(5), // Add some padding to prevent overlap with input
+      top: isFocused || value ? pixelSizeVertical(-10) : pixelSizeVertical(10),
+      backgroundColor: colors.light_grey,
+      paddingHorizontal: pixelSizeHorizontal(5),
       fontSize: fontPixel(14),
-      color: isFocused || error ? colors.dark_blue : colors.dark_grey, // Change color based on focus/error
-      transition: 'all 0.3s ease', // Smooth transition (Note: not supported in React Native)
+      color: isFocused || error ? colors.dark_blue : colors.dark_grey,
     },
     errortext: {
       color: colors.error_red,
@@ -70,33 +74,36 @@ const CustomTextInput = ({
     },
     errbox: {
       marginTop: pixelSizeVertical(7),
-      display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
     },
     container: {
-      marginBottom: pixelSizeVertical(20), // Add spacing between inputs
-      position: 'relative', // Needed for absolutely positioned label
+      marginBottom: pixelSizeVertical(20),
+      position: 'relative',
     },
   });
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
-      <TextInput
-        style={styles.input}
-        placeholder={placeholder}
-        onChangeText={val => setValue(val)}
-        defaultValue={value}
-        placeholderTextColor={colors.lumii_light_grey}
-        returnKeyType="done"
-        keyboardType={keyboardType || 'default'}
-        editable={editable}
-        secureTextEntry={isPassword || false}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-      />
+      <View style={styles.inputContainer}>
+        {icon && (
+          <View style={{marginRight: pixelSizeHorizontal(10)}}>{icon}</View>
+        )}
+        <TextInput
+          style={styles.input}
+          placeholder={placeholder}
+          onChangeText={setValue}
+          value={value}
+          placeholderTextColor={colors.text_grey}
+          keyboardType={keyboardType || 'default'}
+          editable={editable}
+          secureTextEntry={isPassword}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          {...rest}
+        />
+      </View>
       {error && (
         <View style={styles.errbox}>
           <ErrorIcon />

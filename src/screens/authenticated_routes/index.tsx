@@ -48,7 +48,7 @@ const AuthenticatedStack = () => {
           backgroundColor: colors.white,
         },
         tabBarActiveTintColor: colors.dark_blue,
-        tabBarInactiveTintColor: colors.light_grey,
+        tabBarInactiveTintColor: colors.text_grey,
         tabBarItemStyle: {
           paddingBottom: pixelSizeVertical(4),
         },
